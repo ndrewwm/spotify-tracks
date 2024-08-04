@@ -146,6 +146,7 @@ def dbt_build_and_load_turso() -> None:
     """Flow to automate the orchestration of the dbt project and loading of turso db."""
 
     creds = get_credentials()
+    get_run_logger().info(os.listdir())
     clone_repo()
     dbt_build(creds["motherduck"])
     pull_data(creds["motherduck"])
