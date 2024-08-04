@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+from git import Repo
 from prefect import flow, task, get_run_logger
 from prefect.blocks.system import Secret
 from prefect.client.schemas.schedules import CronSchedule
@@ -26,6 +27,13 @@ def get_credentials() -> dict:
 
 
 @task
+def clone_repo(url: str = "https://github.com/ndrewwm/spotify-tracks.git") -> None:
+    """Clone the project's repo from GitHub."""
+
+    Repo.clone_from(url=url, to_path=".")
+
+
+@task
 def dbt_build(token: str) -> None:
     """Build the dbt project."""
 
@@ -40,9 +48,9 @@ def dbt_build(token: str) -> None:
         args=[
             "build",
             "--project-dir",
-            "../dbt_spotify/",
+            "./dbt_spotify/",
             "--profiles-dir",
-            "../dbt_spotify/",
+            "./dbt_spotify/",
             "--exclude",
             "config.materialized:view",
         ],
