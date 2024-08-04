@@ -2,7 +2,6 @@
 
 import os
 import subprocess
-from git import Repo
 from prefect import flow, task, get_run_logger
 from prefect.blocks.system import Secret
 from prefect.client.schemas.schedules import CronSchedule
@@ -39,29 +38,15 @@ def clone_repo(url: str = "https://github.com/ndrewwm/spotify-tracks.git") -> No
 def dbt_build(token: str) -> None:
     """Build the dbt project."""
 
-    get_run_logger().info(os.listdir())
     os.chdir("dbt_spotify")
     os.environ["DBT_SECRET_MOTHERDUCK_TOKEN"] = token
     dbt = dbtRunner()
 
-    res_deps = dbt.invoke(
-        # args=["deps", "--project-dir", "./dbt_spotify/"]
-        args=["deps"],
-    )
+    res_deps = dbt.invoke(args=["deps"])
     if not res_deps.success:
         raise res_deps.exception
 
-    res_build = dbt.invoke(
-        args=[
-            "build",
-            # "--project-dir",
-            # "./dbt_spotify/",
-            # "--profiles-dir",
-            # "./dbt_spotify/",
-            "--exclude",
-            "config.materialized:view",
-        ],
-    )
+    res_build = dbt.invoke(args=["build", "--exclude", "config.materialized:view"])
     if not res_build.success:
         raise res_build.exception
 
@@ -70,18 +55,18 @@ def dbt_build(token: str) -> None:
 
 @task
 def pull_data(token: str) -> None:
-    """Pull the data from motherduck, storing it temporarily in a SQLite database."""
+    """Pull the data from motherduck, storing it spottmporarily in a SQLite database."""
 
     duck = duckdb.connect(f"md:my_db?motherduck_token={token}")
-    duck.sql("attach 'temp.db' (type sqlite);")
-    duck.sql("create table temp.dim_artist as select * from my_db.spotify.dim_artist;")
-    duck.sql("create table temp.dim_album as select * from my_db.spotify.dim_album;")
-    duck.sql("create table temp.dim_track as select * from my_db.spotify.dim_track;")
+    duck.sql("attach 'spottmp.db' (type sqlite);")
+    duck.sql("create table spottmp.dim_artist as select * from my_db.spotify.dim_artist;")
+    duck.sql("create table spottmp.dim_album as select * from my_db.spotify.dim_album;")
+    duck.sql("create table spottmp.dim_track as select * from my_db.spotify.dim_track;")
     duck.sql(
-        "create table temp.fct_track_play as select * from my_db.spotify.fct_played_track;"
+        "create table spottmp.fct_track_play as select * from my_db.spotify.fct_played_track;"
     )
     duck.sql(
-        "create table temp.rpt_track_counts as select * from my_db.spotify.rpt_track_counts;"
+        "create table spottmp.rpt_track_counts as select * from my_db.spotify.rpt_track_counts;"
     )
     return
 
@@ -94,7 +79,7 @@ def generate_ddl() -> tuple[list[str], list[str]]:
     get_run_logger().info("Dumping local sqlite statements...")
     with open("./dump.sql", mode="w") as file:
         subprocess.call(
-            args=["sqlite3", "temp.db", ".dump"],
+            args=["sqlite3", "spottmp.db", ".dump"],
             stdout=file,
         )
 
