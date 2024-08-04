@@ -31,6 +31,8 @@ def clone_repo(url: str = "https://github.com/ndrewwm/spotify-tracks.git") -> No
     """Clone the project's repo from GitHub."""
 
     Repo.clone_from(url=url, to_path=".")
+    get_run_logger().info(os.listdir())
+    return
 
 
 @task
@@ -40,7 +42,9 @@ def dbt_build(token: str) -> None:
     os.environ["DBT_SECRET_MOTHERDUCK_TOKEN"] = token
     dbt = dbtRunner()
 
-    res_deps = dbt.invoke(args=["deps", "--project-dir", "./spotify-tracks/dbt_spotify/"])
+    res_deps = dbt.invoke(
+        args=["deps", "--project-dir", "./spotify-tracks/dbt_spotify/"]
+    )
     if not res_deps.success:
         raise res_deps.exception
 
@@ -141,6 +145,7 @@ def dbt_build_and_load_turso() -> None:
     """Flow to automate the orchestration of the dbt project and loading of turso db."""
 
     creds = get_credentials()
+    clone_repo()
     dbt_build(creds["motherduck"])
     pull_data(creds["motherduck"])
     creates, inserts = generate_ddl()
