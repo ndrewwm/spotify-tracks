@@ -30,7 +30,7 @@ def get_credentials() -> dict:
 def clone_repo(url: str = "https://github.com/ndrewwm/spotify-tracks.git") -> None:
     """Clone the project's repo from GitHub."""
 
-    Repo.clone_from(url=url, to_path=".")
+    Repo.clone_from(url=url, to_path="./spotify-tracks/")
     get_run_logger().info(os.listdir())
     return
 
