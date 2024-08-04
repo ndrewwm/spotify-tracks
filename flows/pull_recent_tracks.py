@@ -1,6 +1,5 @@
 """Gather recently played tracks from the Spotify API."""
 
-import datetime
 import time
 import requests
 import duckdb
@@ -25,16 +24,6 @@ def get_credentials() -> dict[str, dict[str, str]]:
     creds["md_token"] = Secret.load("db-motherduck-token").get()
 
     return creds
-
-
-@task
-def get_unix_timestamp() -> float:
-    """Get the ceiling for requests we'll make today."""
-
-    today = datetime.datetime.today()
-    today = today.replace(hour=0, minute=0, second=0, microsecond=0)
-    unix = time.mktime(today.timetuple())
-    return unix
 
 
 @task
@@ -117,7 +106,7 @@ def _get_items(items: list[dict]) -> list[dict]:
 
 
 @task
-def get_tracks(token: str, today: float) -> dict:
+def get_tracks(token: str) -> dict:
     """Gather tracks from the Spotify API."""
 
     logger = get_run_logger()
@@ -159,11 +148,6 @@ def get_tracks(token: str, today: float) -> dict:
 
 
 @task
-def prep_data(data: dict) -> dict:
-    """Clean up the data from the API."""
-
-
-@task
 def get_db(token: str):
     """Return a database connection to the motherduck db."""
 
@@ -194,14 +178,12 @@ def pull_recent_tracks() -> None:
     """Flow to gather recent spotify tracks."""
 
     creds = get_credentials()
-    today = get_unix_timestamp.submit()
-
     token_valid, token = check_token(creds["access_token"])
     if not token_valid:
         token, refresh = get_token(creds["spotify_body"])
         store_tokens.submit(token, refresh)
 
-    data = get_tracks.submit(token, today)
+    data = get_tracks.submit(token)
     conn = get_db.submit(creds["md_token"])
     insert_data.submit(conn, data)
 

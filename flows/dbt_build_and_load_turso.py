@@ -1,4 +1,4 @@
-"""Builds the dbt project in motherduck."""
+"""Builds the dbt project in motherduck, and loads the downstream Turso database."""
 
 import os
 import sqlite3
