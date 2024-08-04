@@ -1,0 +1,9 @@
+dbt_spotify:
+  outputs:
+    default:
+      type: duckdb
+      path: "md:my_db?motherduck_token={{ env_var('DBT_SECRET_MOTHERDUCK_TOKEN') }}"
+      schema: spotify
+      threads: 1
+
+  target: default
