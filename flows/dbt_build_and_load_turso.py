@@ -30,7 +30,13 @@ def dbt_build(token: str) -> None:
     """Build the dbt project."""
 
     os.environ["DBT_SECRET_MOTHERDUCK_TOKEN"] = token
-    res: dbtRunnerResult = dbtRunner().invoke(
+    dbt = dbtRunner()
+
+    res_deps = dbt.invoke(args=["deps", "--project-dir", "./dbt_spotify/"])
+    if not res_deps.success:
+        raise res_deps.exception
+
+    res_build = dbt.invoke(
         args=[
             "build",
             "--project-dir",
@@ -41,11 +47,10 @@ def dbt_build(token: str) -> None:
             "config.materialized:view",
         ],
     )
+    if not res_build.success:
+        raise res_build.exception
 
-    if res.success:
-        return
-
-    raise res.exception
+    return
 
 
 @task
@@ -54,15 +59,9 @@ def pull_data(token: str) -> None:
 
     duck = duckdb.connect(f"md:my_db?motherduck_token={token}")
     duck.sql("attach 'temp.db' (type sqlite);")
-    duck.sql(
-        "create table temp.dim_artist as select * from my_db.spotify.dim_artist;"
-    )
-    duck.sql(
-        "create table temp.dim_album as select * from my_db.spotify.dim_album;"
-    )
-    duck.sql(
-        "create table temp.dim_track as select * from my_db.spotify.dim_track;"
-    )
+    duck.sql("create table temp.dim_artist as select * from my_db.spotify.dim_artist;")
+    duck.sql("create table temp.dim_album as select * from my_db.spotify.dim_album;")
+    duck.sql("create table temp.dim_track as select * from my_db.spotify.dim_track;")
     duck.sql(
         "create table temp.fct_track_play as select * from my_db.spotify.fct_played_track;"
     )
