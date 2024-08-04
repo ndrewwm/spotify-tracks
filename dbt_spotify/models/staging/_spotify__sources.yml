@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: spotify
+    schema: spotify
+    tables:
+      - name: src_recent_tracks
+        description: >
+          Storage table for results from the `pull_recent_tracks` Prefect flow.
+        columns:
+          - name: track_name
+            description: '{{ doc("track_name") }}'
+
+          - name: track_album
+            description: '{{ doc("track_album") }}'
+
+          - name: track_artists
+            description: '{{ doc("track_artists") }}'
+
+          - name: played_at
+            description: '{{ doc("played_at") }}'
+
+          - name: track_popularity
+            description: '{{ doc("popularity") }}'
