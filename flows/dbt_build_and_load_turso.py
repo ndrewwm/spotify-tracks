@@ -39,6 +39,7 @@ def clone_repo(url: str = "https://github.com/ndrewwm/spotify-tracks.git") -> No
 def dbt_build(token: str) -> None:
     """Build the dbt project."""
 
+    get_run_logger().info(os.listdir())
     os.environ["DBT_SECRET_MOTHERDUCK_TOKEN"] = token
     dbt = dbtRunner()
 
