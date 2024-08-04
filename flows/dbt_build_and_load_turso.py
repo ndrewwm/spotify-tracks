@@ -43,7 +43,7 @@ def dbt_build(token: str) -> None:
     dbt = dbtRunner()
 
     res_deps = dbt.invoke(
-        args=["deps", "--project-dir", "./spotify-tracks/dbt_spotify/"]
+        args=["deps", "--project-dir", "./dbt_spotify/"]
     )
     if not res_deps.success:
         raise res_deps.exception
@@ -52,9 +52,9 @@ def dbt_build(token: str) -> None:
         args=[
             "build",
             "--project-dir",
-            "./spotify-tracks/dbt_spotify/",
+            "./dbt_spotify/",
             "--profiles-dir",
-            "./spotify-tracks/dbt_spotify/",
+            "./dbt_spotify/",
             "--exclude",
             "config.materialized:view",
         ],
