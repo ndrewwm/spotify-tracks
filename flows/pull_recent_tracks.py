@@ -7,6 +7,7 @@ import duckdb
 from duckdb import DuckDBPyConnection
 from prefect import task, flow, get_run_logger
 from prefect.blocks.system import Secret
+from prefect.client.schemas.schedules import CronSchedule
 
 
 @task
@@ -213,4 +214,5 @@ if __name__ == "__main__":
     ).deploy(
         name="spotify | pull_recent_tracks",
         work_pool_name="Managed Compute",
+        schedule=CronSchedule(cron="30 8-23/2 * * *", timezone="America/Denver")
     )
