@@ -40,11 +40,13 @@ def dbt_build(token: str) -> None:
     """Build the dbt project."""
 
     get_run_logger().info(os.listdir())
+    os.chdir("dbt_spotify")
     os.environ["DBT_SECRET_MOTHERDUCK_TOKEN"] = token
     dbt = dbtRunner()
 
     res_deps = dbt.invoke(
-        args=["deps", "--project-dir", "./dbt_spotify/"]
+        # args=["deps", "--project-dir", "./dbt_spotify/"]
+        args=["deps"],
     )
     if not res_deps.success:
         raise res_deps.exception
@@ -52,10 +54,10 @@ def dbt_build(token: str) -> None:
     res_build = dbt.invoke(
         args=[
             "build",
-            "--project-dir",
-            "./dbt_spotify/",
-            "--profiles-dir",
-            "./dbt_spotify/",
+            # "--project-dir",
+            # "./dbt_spotify/",
+            # "--profiles-dir",
+            # "./dbt_spotify/",
             "--exclude",
             "config.materialized:view",
         ],
