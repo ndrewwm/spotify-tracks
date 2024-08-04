@@ -1,14 +1,14 @@
 """Builds the dbt project in motherduck."""
 
 import os
-import subprocess
-from prefect import flow, task, get_run_logger
-from prefect.blocks.system import Secret
-from prefect.client.schemas.schedules import CronSchedule
+import sqlite3
 
-from dbt.cli.main import dbtRunner, dbtRunnerResult
 import duckdb
 import libsql_experimental as libsql
+from dbt.cli.main import dbtRunner
+from prefect import flow, get_run_logger, task
+from prefect.blocks.system import Secret
+from prefect.client.schemas.schedules import CronSchedule
 
 
 @task
@@ -50,7 +50,9 @@ def pull_data(token: str) -> None:
 
     duck = duckdb.connect(f"md:my_db?motherduck_token={token}")
     duck.sql("attach 'spottmp.db' (type sqlite);")
-    duck.sql("create table spottmp.dim_artist as select * from my_db.spotify.dim_artist;")
+    duck.sql(
+        "create table spottmp.dim_artist as select * from my_db.spotify.dim_artist;"
+    )
     duck.sql("create table spottmp.dim_album as select * from my_db.spotify.dim_album;")
     duck.sql("create table spottmp.dim_track as select * from my_db.spotify.dim_track;")
     duck.sql(
@@ -68,11 +70,11 @@ def generate_ddl() -> tuple[list[str], list[str]]:
     Returns the DDL for execution."""
 
     get_run_logger().info("Dumping local sqlite statements...")
+    db = sqlite3.connect("spottmp.db")
+
     with open("./dump.sql", mode="w") as file:
-        subprocess.call(
-            args=["sqlite3", "spottmp.db", ".dump"],
-            stdout=file,
-        )
+        for line in db.iterdump():
+            file.write(f"{line}\n")
 
     creates = []
     inserts = []
