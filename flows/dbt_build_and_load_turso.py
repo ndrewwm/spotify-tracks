@@ -4,6 +4,7 @@ import os
 import subprocess
 from prefect import flow, task, get_run_logger
 from prefect.blocks.system import Secret
+from prefect.client.schemas.schedules import CronSchedule
 
 from dbt.cli.main import dbtRunner, dbtRunnerResult
 import duckdb
@@ -119,5 +120,14 @@ def dbt_build_and_load_turso() -> None:
     dbt_build(creds)
     load_turso(creds)
 
+
 if __name__ == "__main__":
-    dbt_build_and_load_turso()
+    # dbt_build_and_load_turso()
+    flow.from_source(
+        source="https://github.com/ndrewwm/spotify-tracks.git",
+        entrypoint="flows/dbt_build_and_load_turso.py:dbt_build_and_load_turso",
+    ).deploy(
+        name="spotify | dbt_build_and_load_turso",
+        work_pool_name="Managed Compute",
+        schedule=CronSchedule(cron="10 8,17 * * *", timezone="America/Denver"),
+    )
