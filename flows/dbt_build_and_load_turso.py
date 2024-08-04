@@ -26,15 +26,6 @@ def get_credentials() -> dict:
 
 
 @task
-def clone_repo(url: str = "https://github.com/ndrewwm/spotify-tracks.git") -> None:
-    """Clone the project's repo from GitHub."""
-
-    Repo.clone_from(url=url, to_path="./spotify-tracks/")
-    get_run_logger().info(os.listdir())
-    return
-
-
-@task
 def dbt_build(token: str) -> None:
     """Build the dbt project."""
 
@@ -133,8 +124,6 @@ def dbt_build_and_load_turso() -> None:
     """Flow to automate the orchestration of the dbt project and loading of turso db."""
 
     creds = get_credentials()
-    get_run_logger().info(os.listdir())
-    clone_repo()
     dbt_build(creds["motherduck"])
     pull_data(creds["motherduck"])
     creates, inserts = generate_ddl()
