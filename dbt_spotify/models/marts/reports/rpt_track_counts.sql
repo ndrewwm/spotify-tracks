@@ -20,7 +20,7 @@ counts as (
         on history.track_id = dim_track.track_id
     where
         date_diff('day', played_at, current_date) <= 30
-    group by track_id
+    group by history.track_id
 ),
 
 final as (
