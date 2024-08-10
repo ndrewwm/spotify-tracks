@@ -12,9 +12,12 @@ dim_track as (
 
 counts as (
     select
-        track_id,
-        count(*) as plays
+        history.track_id,
+        count(*) as plays,
+        sum(dim_track.duration_ms / 1000 / 60) as minutes_played
     from history
+    left join dim_track
+        on history.track_id = dim_track.track_id
     where
         date_diff('day', played_at, current_date) <= 30
     group by track_id
@@ -25,7 +28,8 @@ final as (
         dim_track.track_name,
         dim_track.artists,
         dim_album.album,
-        counts.plays
+        counts.plays,
+        counts.minutes_played
     from counts
     left join dim_track
         on counts.track_id = dim_track.track_id

@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: rpt_artist_counts
+    description: A summary of the total number of plays and minutes listened over the prior 30 days, by artist.
+
+  - name: rpt_track_counts
+    description: A summary of the total number of plays and minutes listened over the prior 30 days, by track.

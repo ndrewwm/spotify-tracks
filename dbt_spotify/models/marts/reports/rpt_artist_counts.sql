@@ -9,7 +9,8 @@ dim_track as (
 counts as (
     select
         dim_track.artists,
-        count(*) as plays
+        count(*) as plays,
+        sum(dim_track.duration_ms / 1000 / 60) as minutes_played
     from history
     inner join dim_track
         on history.track_id = dim_track.track_id
