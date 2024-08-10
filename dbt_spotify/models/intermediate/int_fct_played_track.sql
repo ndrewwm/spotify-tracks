@@ -11,6 +11,7 @@ combined as (
         d.track_id,
         d.album_id,
         p.played_at,
+        timezone('America/Boise', cast(p.played_at || '+00' as timestamptz)) as played_at_mtn,
         p.track_popularity,
         p.context
     from tracks_played p
