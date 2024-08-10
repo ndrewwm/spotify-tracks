@@ -136,7 +136,6 @@ def dbt_build_and_load_turso() -> None:
 
 
 if __name__ == "__main__":
-    # dbt_build_and_load_turso()
     flow.from_source(
         source="https://github.com/ndrewwm/spotify-tracks.git",
         entrypoint="flows/dbt_build_and_load_turso.py:dbt_build_and_load_turso",
