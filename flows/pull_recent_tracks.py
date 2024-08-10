@@ -105,7 +105,7 @@ def _get_items(items: list[dict]) -> list[dict]:
     return out
 
 
-@task
+@task(retries=1, retry_delay_seconds=15)
 def get_tracks(token: str) -> dict:
     """Gather tracks from the Spotify API."""
 
@@ -147,14 +147,14 @@ def get_tracks(token: str) -> dict:
     return out
 
 
-@task
+@task(retries=1, retry_delay_seconds=15)
 def get_db(token: str):
     """Return a database connection to the motherduck db."""
 
     return duckdb.connect(f"md:?motherduck_token={token}")
 
 
-@task
+@task(retries=1, retry_delay_seconds=15)
 def insert_data(conn: DuckDBPyConnection, data: list[dict]) -> None:
     """Load gathered tracks into the database."""
 
@@ -189,7 +189,6 @@ def pull_recent_tracks() -> None:
 
 
 if __name__ == "__main__":
-    # pull_recent_tracks()
     flow.from_source(
         source="https://github.com/ndrewwm/spotify-tracks.git",
         entrypoint="flows/pull_recent_tracks.py:pull_recent_tracks",
