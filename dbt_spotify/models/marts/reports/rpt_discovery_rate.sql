@@ -1,4 +1,16 @@
-with base as (
+with tracks as (
+    select * from {{ ref("fct_played_track") }}
+),
+
+dim_track as (
+    select * from {{ ref("dim_track") }}
+),
+
+dim_artist as (
+    select * from {{ ref("dim_artist") }}
+),
+
+base as (
     select distinct
         year(played_at_mtn) as year_played,
         week(played_at_mtn) as week_played,
@@ -6,9 +18,9 @@ with base as (
         count(*) as plays,
         count(distinct dt.artists) as uniq_artists,
         count(distinct dt.track_id) as uniq_tracks
-    from spotify.fct_played_track fpt
-    left join spotify.dim_track dt
-        on fpt.track_id = dt.track_id
+    from tracks
+    left join dim_track dt
+        on tracks.track_id = dt.track_id
     group by year_played, week_played
     order by year_played, week_played
 ),
@@ -18,7 +30,7 @@ new_tracks as (
         yr_first_played as year_played,
         wk_first_played as week_played,
         count(*) as new_tracks
-    from spotify.dim_track
+    from dim_track
     group by yr_first_played, wk_first_played
 ),
 
@@ -27,7 +39,7 @@ new_artists as (
         yr_first_played as year_played,
         wk_first_played as week_played,
         count(*) as new_artists
-    from spotify.dim_artist
+    from dim_artist
     group by yr_first_played, wk_first_played  
 ),
 
