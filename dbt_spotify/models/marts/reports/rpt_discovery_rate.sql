@@ -48,8 +48,12 @@ final as (
         base.*,
         new_tracks.new_tracks,
         new_artists.new_artists,
-        new_tracks.new_tracks / base.uniq_tracks as track_discovery_rate,
-        new_artists.new_artists / base.uniq_artists as artist_discovery_rate
+        {{ 
+            dbt_utils.safe_divide('new_tracks.new_tracks', 'base.uniq_tracks') 
+        }} as track_discovery_rate,
+        {{
+            dbt_utils.safe_divide('new_artists.new_artists', 'base.uniq_artists')
+        }} as artist_discovery_rate
     from base
     left join new_tracks
         on 
