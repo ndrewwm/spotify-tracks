@@ -29,7 +29,9 @@ jobs:
           dbt deps
 
       - name: Generate docs
-        run: dbt docs generate
+        run: |
+          pwd
+          dbt docs generate --profiles-dir '.'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
