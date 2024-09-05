@@ -11,13 +11,13 @@ models:
           - not_null
 
       - name: album
-        description: Album title.
+        description: '{{ doc("track_album") }}'
 
       - name: release_date
-        description: Date when the album was released.
+        description: '{{ doc("album_release_date") }}'
 
   - name: dim_artist
-    description: Directory of artists observed in the data. Each row is an artist or performing group.
+    description: Directory of artists observed in the data. Each row is an artist or performing group (or set of artists).
     columns:
       - name: artist_id
         description: Unique artist ID.
@@ -25,8 +25,20 @@ models:
           - unique
           - not_null
 
-      - name: artist
-        description: Artist/performer name.
+      - name: artists
+        description: '{{ doc("track_artists") }}'
+
+      - name: total_plays
+        description: '{{ doc("total_plays") }}'
+
+      - name: dttm_first_played
+        description: '{{ doc("dttm_first_played") }}'
+
+      - name: yr_first_played
+        description: '{{ doc("yr_first_played") }}'
+
+      - name: wk_first_played
+        description: '{{ doc("wk_first_played") }}'
 
   - name: dim_track
     description: Directory of all tracks observed. Each row is a track.
@@ -43,11 +55,26 @@ models:
       - name: album_id
         description: Album ID corresponding to this track.
 
+      - name: album
+        description: '{{ doc("track_album") }}'
+
       - name: artists
         description: '{{ doc("track_artists") }}'
 
       - name: duration_ms
-        description: Track duration (milliseconds).
+        description: '{{ doc("duration_ms") }}'
+
+      - name: total_plays
+        description: '{{ doc("total_plays") }}'
+
+      - name: dttm_first_played
+        description: '{{ doc("dttm_first_played") }}'
+
+      - name: yr_first_played
+        description: '{{ doc("yr_first_played") }}'
+
+      - name: wk_first_played
+        description: '{{ doc("wk_first_played") }}'
 
   - name: fct_played_track
     description: Spotify listening history. Each row is an instance that a track was played.
@@ -67,8 +94,11 @@ models:
       - name: played_at
         description: '{{ doc("played_at") }}'
 
+      - name: played_at_mtn
+        description: '{{ doc("played_at_mtn") }}'
+
       - name: track_popularity
         description: '{{ doc("popularity") }}'
 
       - name: context
-        description: What context the track is being played in.
+        description: '{{ doc("context") }}'

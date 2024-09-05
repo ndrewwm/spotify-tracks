@@ -1,5 +1,5 @@
 name: 'dbt_spotify'
-version: '1.0.0'
+version: '2.0.0'
 
 profile: 'dbt_spotify'
 
@@ -18,7 +18,12 @@ models:
   dbt_spotify:
     staging:
       +materialized: view
-    intermediate:
-      +materialized: ephemeral
+      +docs:
+        node_color: 'silver'
     marts:
       +materialized: table
+      +docs:
+        node_color: salmon
+      reports:
+        +docs:
+          node_color: skyblue
