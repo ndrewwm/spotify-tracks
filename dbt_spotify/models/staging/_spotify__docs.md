@@ -2,12 +2,20 @@
 Unique ID for this track.
 {% enddocs %}
 
+{% docs play_id %}
+Unique ID for this track play.
+{% enddocs %}
+
 {% docs track_name %}
 The track's title.
 {% enddocs %}
 
 {% docs album_id %}
 Unique ID for this album.
+{% enddocs %}
+
+{% docs artist_id %}
+Unique ID for the track's artist(s).
 {% enddocs %}
 
 {% docs track_album %}

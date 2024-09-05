@@ -3,6 +3,65 @@ version: 2
 models:
   - name: rpt_artist_counts
     description: A summary of the total number of plays and minutes listened over the prior 30 days, by artist.
+    columns:
+      - name: artists
+        description: '{{ doc("track_artists") }}'
+
+      - name: plays
+        description: Number of times a track from the artist(s) has been played.
+
+      - name: minutes_played
+        description: Total number of minutes spent listening to the artist(s) over the past 30 days.
 
   - name: rpt_track_counts
     description: A summary of the total number of plays and minutes listened over the prior 30 days, by track.
+    columns:
+      - name: track_name
+        description: The track's name.
+
+      - name: artists
+        description: '{{ doc("track_artists") }}'
+
+      - name: album
+        description: '{{ doc("track_album") }}'
+
+      - name: plays
+        description: Number of times this track has been played in the past 30 days.
+
+      - name: minutes_played
+        description: Total number of minutes spent listening to this track over the past 30 days.
+
+  - name: rpt_discovery_rate
+    description: |
+      A report, organized by week and year, tracking the total number of plays per week,
+      how many *unique* artists/tracks were played, and how many *new* artists/tracks were played.
+    columns:
+      - name: year_played
+        description: Year
+
+      - name: week_played
+        description: Week (integer)
+
+      - name: week_dt
+        description: Date corresponding to the week. Included for plotting convenience.
+
+      - name: plays
+        description: Total number of plays recorded during this week.
+
+      - name: uniq_artists
+        description: Count of unique artists observed.
+
+      - name: uniq_tracks
+        description: Count of unique tracks observed.
+
+      - name: new_tracks
+        description: Count of new tracks observed.
+
+      - name: new_artists
+        description: Count of new artists observed
+
+      - name: track_discovery_rate
+        description: "WIP. A proportion: new_tracks / uniq_tracks"
+
+      - name: artist_discovery_rate
+        description: "WIP. A proportion: new_artists / uniq_artists"

@@ -2,3 +2,44 @@ version: 2
 
 models:
   - name: stg_recent_tracks
+    description: "Staging table for `src_recent_tracks`."
+    columns:
+      - name: track_id
+        description: '{{ doc("track_id") }}'
+
+      - name: album_id
+        description: '{{ doc("album_id") }}'
+
+      - name: play_id
+        description: '{{ doc("play_id") }}'
+
+      - name: artist_id
+        description: '{{ doc("artist_id") }}'
+
+      - name: track_name
+        description: '{{ doc("track_name") }}'
+
+      - name: track_album
+        description: '{{ doc("track_album") }}'
+
+      - name: track_artists
+        description: '{{ doc("track_artists") }}'
+
+      - name: played_at
+        description: '{{ doc("played_at") }}'
+
+      - name: played_at_mtn
+        description: '{{ doc("played_at_mtn") }}'
+
+      - name: track_popularity
+        description: '{{ doc("popularity") }}'
+
+      - name: album_release_date
+        description: '{{ doc("album_release_date") }}'
+
+      - name: context
+        description: '{{ doc("context") }}'
+
+      - name: duration_ms
+        description: '{{ doc("duration_ms") }}'
+
