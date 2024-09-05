@@ -1,0 +1,44 @@
+name: Build dbt docs
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DBT_SECRET_MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  docs:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dbt
+        run: |
+          pip install -r requirements.txt
+          cd dbt_spotify
+          dbt deps
+
+      - name: Generate docs
+        run: dbt docs generate
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./target/"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
