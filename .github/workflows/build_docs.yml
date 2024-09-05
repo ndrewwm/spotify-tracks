@@ -30,8 +30,9 @@ jobs:
 
       - name: Generate docs
         run: |
-          pwd
-          dbt docs generate --profiles-dir '.'
+          cd dbt_spotify
+          dbt debug
+          dbt docs generate
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
