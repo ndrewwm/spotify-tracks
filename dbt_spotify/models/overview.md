@@ -1,3 +1,5 @@
+{% docs __overview__ %}
+
 # dbt Docs: `spotify-tracks`
 
 This is the auto-generated docs page for the `dbt_spotify` project within the [spotify-tracks](https://github.com/ndrewwm/spotify-tracks) repo. Here you can browse descriptions of the models built by the project, and view their interdependencies in the site's *lineage graph*.
@@ -17,3 +19,5 @@ On model pages, you'll see the immediate parents and children of the model you'r
 Once expanded, you'll be able to use the `--select` and `--exclude` model selection syntax to filter the models in the graph. For more information on model selection, check out [dbt's docs](https://docs.getdbt.com/docs/model-selection-syntax).
 
 Note that you can also right-click on models to interactively filter and explore the graph.
+
+{% enddocs %}
