@@ -64,6 +64,9 @@ def pull_data(token: str) -> None:
     duck.sql(
         "create table spottmp.rpt_artist_counts as select * from my_db.spotify.rpt_artist_counts;"
     )
+    duck.sql(
+        "create table spottmp.rpt_discovery_rates as select * from my_db.spotify.rpt_discovery_rate"
+    )
     return
 
 
