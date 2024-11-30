@@ -6,7 +6,7 @@ select
     }} as play_id,
     {{
         dbt_utils.generate_surrogate_key(
-            ['track_name', 'track_album', 'track_artists']
+            ['track_name', 'track_album', 'album_release_date', 'track_artists']
         )
     }} as track_id,
     {{
