@@ -49,7 +49,7 @@ def dbt_build(token: str) -> None:
 def pull_data(token: str) -> None:
     """Pull the data from motherduck, storing it spottmporarily in a SQLite database."""
 
-    duck = duckdb.connect(f"md:my_db?motherduck_token={token}", read_only=True)
+    duck = duckdb.connect(f"md:my_db?motherduck_token={token}&user=pull_data")
     duck.sql("attach 'spottmp.db' (type sqlite);")
     duck.sql(
         """drop table if exists spottmp.dim_artist;
