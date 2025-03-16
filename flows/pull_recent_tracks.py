@@ -185,7 +185,7 @@ def pull_recent_tracks() -> None:
 
     data = get_tracks.submit(token)
     conn = get_db.submit(creds["md_token"])
-    insert_data.submit(conn, data)
+    insert_data(conn, data)
 
 
 if __name__ == "__main__":
