@@ -31,3 +31,37 @@ sources:
 
           - name: duration_ms
             description: '{{ doc("duration_ms") }}'
+
+      - name: src_playlist_tracks
+        description: >
+          Storage table for the results of the `pull_playlist_tracks` Prefect flow.
+        columns:
+          - name: track_name
+            description: '{{ doc("track_name") }}'
+
+          - name: track_album
+            description: '{{ doc("track_album") }}'
+
+          - name: track_artists
+            description: '{{ doc("track_artists") }}'
+
+          - name: added_at
+            description: ""
+
+          - name: track_popularity
+            description: '{{ doc("popularity") }}'
+
+          - name: album_release_date
+            description: '{{ doc("album_release_date") }}'
+
+          - name: duration_ms
+            description: '{{ doc("duration_ms") }}'
+
+          - name: playlist_name
+            description: ""
+
+          - name: owner_id
+            description: ""
+
+          - name: playlist_followers_total
+            description: ""

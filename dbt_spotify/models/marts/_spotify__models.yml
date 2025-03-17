@@ -6,7 +6,7 @@ models:
     columns:
       - name: album_id
         description: Unique ID for this album.
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -21,7 +21,7 @@ models:
     columns:
       - name: artist_id
         description: Unique artist ID.
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -40,12 +40,14 @@ models:
       - name: wk_first_played
         description: '{{ doc("wk_first_played") }}'
 
+  - name: dim_playlist
+
   - name: dim_track
     description: Directory of all tracks observed. Each row is a track.
     columns:
       - name: track_id
         description: Unique track ID.
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -81,7 +83,7 @@ models:
     columns:
       - name: play_id
         description: Unique ID for this instance of listening history.
-        tests:
+        data_tests:
           - unique
           - not_null
 
