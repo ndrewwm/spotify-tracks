@@ -10,6 +10,7 @@ from prefect.blocks.system import Secret
 from prefect.client.schemas.schedules import CronSchedule
 from pydantic import BaseModel, Field
 
+
 class Track(BaseModel):
     """A row within src_recent_tracks."""
 
@@ -40,7 +41,7 @@ spotify_api_recently_played_response = Asset(
     properties=AssetProperties(
         name="Spotify API, Recently Played - Response",
         description="Flattened JSON data containing recently played tracks.",
-    )
+    ),
 )
 
 motherduck_src_recent_tracks = Asset(
@@ -48,7 +49,7 @@ motherduck_src_recent_tracks = Asset(
     properties=AssetProperties(
         name="Motherduck: my_db.spotify.src_recent_tracks",
         description="Database source table, containing recently played tracks.",
-    )
+    ),
 )
 
 
@@ -121,11 +122,11 @@ def _get_items(items: list[dict]) -> list[dict]:
         release_date_precision: str = album.get("release_date_precision")
         popularity: float = track.get("popularity")
         played_at: str = item.get("played_at")
-        
+
         context: dict = item.get("context")
         if context:
             context = context.get("type")
-        
+
         duration_ms: float = track.get("duration_ms")
 
         track_artists: list[dict] = track.get("artists")
@@ -133,17 +134,19 @@ def _get_items(items: list[dict]) -> list[dict]:
         for artist in track_artists:
             artists.append(artist.get("name"))
 
-        out.append({
-            "track_name": track_name,
-            "track_album": album_name,
-            "track_artists": ", ".join(artists),
-            "album_release_date": release_date,
-            "release_date_precision": release_date_precision,
-            "track_popularity": popularity,
-            "played_at": played_at,
-            "context": context if context else None,
-            "duration_ms": duration_ms,
-        })
+        out.append(
+            {
+                "track_name": track_name,
+                "track_album": album_name,
+                "track_artists": ", ".join(artists),
+                "album_release_date": release_date,
+                "release_date_precision": release_date_precision,
+                "track_popularity": popularity,
+                "played_at": played_at,
+                "context": context if context else None,
+                "duration_ms": duration_ms,
+            }
+        )
 
     return out
 
@@ -159,7 +162,7 @@ def get_tracks(token: str) -> dict:
 
     logger = get_run_logger()
     logger.info("Pulling recent tracks...")
-    
+
     headers = {"Authorization": f"Bearer {token}"}
     params = {"limit": 50}
     req = requests.get(
@@ -223,7 +226,9 @@ def insert_data(conn: DuckDBPyConnection, data: list[dict]) -> None:
         """,
         parameters=rows,
     )
-    motherduck_src_recent_tracks.add_metadata({"pydantic_schema": Track.model_json_schema()})
+    motherduck_src_recent_tracks.add_metadata(
+        {"pydantic_schema": Track.model_json_schema()}
+    )
 
 
 @flow
