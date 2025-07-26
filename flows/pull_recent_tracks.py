@@ -5,8 +5,51 @@ import requests
 import duckdb
 from duckdb import DuckDBPyConnection
 from prefect import task, flow, get_run_logger
+from prefect.assets import materialize, Asset, AssetProperties
 from prefect.blocks.system import Secret
 from prefect.client.schemas.schedules import CronSchedule
+from pydantic import BaseModel, Field
+
+class Track(BaseModel):
+    """A row within src_recent_tracks."""
+
+    track_name: str
+    track_album: str
+    track_artists: str = Field(description="Comma separated list of artists.")
+    album_release_date: str
+    release_date_precision: str
+    popularity: float = Field(
+        description="Integer value ranging from 0 to 100, with 100 indicating highest popularity."
+    )
+    played_at: str
+    context: str
+    duration_ms: float
+
+
+spotify_api_recently_played = Asset(
+    key="api://spotify/v1/me/player/recently-played",
+    properties=AssetProperties(
+        name="Spotify API, Recently Played",
+        description="The /v1/ Spotify API. Docs: ...",
+        url="https://api.spotify.com/v1/",
+    ),
+)
+
+spotify_api_recently_played_response = Asset(
+    key="api://spotify/v1/me/player/recently-played/response",
+    properties=AssetProperties(
+        name="Spotify API, Recently Played - Response",
+        description="Flattened JSON data containing recently played tracks.",
+    )
+)
+
+motherduck_src_recent_tracks = Asset(
+    key="duckdb://spotify/src_recent_tracks",
+    properties=AssetProperties(
+        name="Motherduck: my_db.spotify.src_recent_tracks",
+        description="Database source table, containing recently played tracks.",
+    )
+)
 
 
 @task
@@ -105,7 +148,12 @@ def _get_items(items: list[dict]) -> list[dict]:
     return out
 
 
-@task(retries=1, retry_delay_seconds=15)
+@materialize(
+    spotify_api_recently_played_response,
+    asset_deps=[spotify_api_recently_played],
+    retries=1,
+    retry_delay_seconds=15,
+)
 def get_tracks(token: str) -> dict:
     """Gather tracks from the Spotify API."""
 
@@ -154,7 +202,11 @@ def get_db(token: str):
     return duckdb.connect(f"md:?motherduck_token={token}")
 
 
-@task(retries=1, retry_delay_seconds=15)
+@materialize(
+    motherduck_src_recent_tracks,
+    retries=1,
+    retry_delay_seconds=15,
+)
 def insert_data(conn: DuckDBPyConnection, data: list[dict]) -> None:
     """Load gathered tracks into the database."""
 
@@ -171,6 +223,7 @@ def insert_data(conn: DuckDBPyConnection, data: list[dict]) -> None:
         """,
         parameters=rows,
     )
+    motherduck_src_recent_tracks.add_metadata({"pydantic_schema": Track.model_json_schema()})
 
 
 @flow
@@ -189,11 +242,12 @@ def pull_recent_tracks() -> None:
 
 
 if __name__ == "__main__":
-    flow.from_source(
-        source="https://github.com/ndrewwm/spotify-tracks.git",
-        entrypoint="flows/pull_recent_tracks.py:pull_recent_tracks",
-    ).deploy(
-        name="spotify | pull_recent_tracks",
-        work_pool_name="Managed Compute",
-        schedule=CronSchedule(cron="30 8-23/2 * * *", timezone="America/Denver")
-    )
+    # flow.from_source(
+    #     source="https://github.com/ndrewwm/spotify-tracks.git",
+    #     entrypoint="flows/pull_recent_tracks.py:pull_recent_tracks",
+    # ).deploy(
+    #     name="spotify | pull_recent_tracks",
+    #     work_pool_name="Managed Compute",
+    #     schedule=CronSchedule(cron="30 8-23/2 * * *", timezone="America/Denver")
+    # )
+    pull_recent_tracks()
