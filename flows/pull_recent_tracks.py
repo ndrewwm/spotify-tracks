@@ -247,12 +247,11 @@ def pull_recent_tracks() -> None:
 
 
 if __name__ == "__main__":
-    # flow.from_source(
-    #     source="https://github.com/ndrewwm/spotify-tracks.git",
-    #     entrypoint="flows/pull_recent_tracks.py:pull_recent_tracks",
-    # ).deploy(
-    #     name="spotify | pull_recent_tracks",
-    #     work_pool_name="Managed Compute",
-    #     schedule=CronSchedule(cron="30 8-23/2 * * *", timezone="America/Denver")
-    # )
-    pull_recent_tracks()
+    flow.from_source(
+        source="https://github.com/ndrewwm/spotify-tracks.git",
+        entrypoint="flows/pull_recent_tracks.py:pull_recent_tracks",
+    ).deploy(
+        name="spotify | pull_recent_tracks",
+        work_pool_name="Managed Compute",
+        schedule=CronSchedule(cron="30 8-23/2 * * *", timezone="America/Denver")
+    )
