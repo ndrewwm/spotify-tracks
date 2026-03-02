@@ -1,0 +1,15 @@
+exposures:
+  - name: ndrewwm__tracks_dash
+    label: Spotify Listening Activity (ndrewwm.com)
+    type: dashboard
+    maturity: medium
+    url: https://ndrewwm.com/projects/spotify
+    description: >
+      A dashboard showing my listening habits over the past year or so.
+    depends_on:
+      - ref("rpt_artist_counts")
+      - ref("rpt_discovery_rate")
+      - ref("rpt_track_counts")
+    owner:
+      name: Andrew
+      email: hello@ndrewwm.com
